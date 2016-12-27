@@ -3,12 +3,8 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'me.tatarka:gradle-retrolambda:3.1.0'
+    classpath 'me.tatarka:gradle-retrolambda:3.2.3'
   }
-}
-
-repositories {
-  mavenCentral()
 }
 
 apply plugin: 'com.android.library'
@@ -16,6 +12,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
+  defaultPublishConfig "debug"
+
   def globalConfiguration = rootProject.extensions.getByName("ext")
 
   compileSdkVersion globalConfiguration.getAt("androidCompileSdkVersion")
@@ -54,9 +52,8 @@ dependencies {
   def testDependencies = rootProject.ext.dataTestDependencies
 
   compile project(':domain')
-  apt dataDependencies.daggerCompiler
   provided dataDependencies.javaxAnnotation
-  compile dataDependencies.dagger
+  compile dataDependencies.javaxInject
   compile dataDependencies.okHttp
   compile dataDependencies.gson
   compile dataDependencies.rxJava

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,11 @@ import com.fernandocejas.android10.sample.domain.exception.ErrorBundle;
 /**
  * Wrapper around Exceptions used to manage errors in the repository.
  */
-public class RepositoryErrorBundle implements ErrorBundle {
+class RepositoryErrorBundle implements ErrorBundle {
 
   private final Exception exception;
 
-  public RepositoryErrorBundle(Exception exception) {
+  RepositoryErrorBundle(Exception exception) {
     this.exception = exception;
   }
 
@@ -37,7 +37,7 @@ public class RepositoryErrorBundle implements ErrorBundle {
   public String getErrorMessage() {
     String message = "";
     if (this.exception != null) {
-      this.exception.getMessage();
+      message = this.exception.getMessage();
     }
     return message;
   }

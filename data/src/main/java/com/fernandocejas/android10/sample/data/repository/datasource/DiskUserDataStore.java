@@ -17,13 +17,13 @@ package com.fernandocejas.android10.sample.data.repository.datasource;
 
 import com.fernandocejas.android10.sample.data.cache.UserCache;
 import com.fernandocejas.android10.sample.data.entity.UserEntity;
+import io.reactivex.Observable;
 import java.util.List;
-import rx.Observable;
 
 /**
  * {@link UserDataStore} implementation based on file system data store.
  */
-public class DiskUserDataStore implements UserDataStore {
+class DiskUserDataStore implements UserDataStore {
 
   private final UserCache userCache;
 
@@ -32,7 +32,7 @@ public class DiskUserDataStore implements UserDataStore {
    *
    * @param userCache A {@link UserCache} to cache data retrieved from the api.
    */
-  public DiskUserDataStore(UserCache userCache) {
+  DiskUserDataStore(UserCache userCache) {
     this.userCache = userCache;
   }
 

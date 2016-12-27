@@ -21,16 +21,14 @@ import com.fernandocejas.android10.sample.presentation.model.UserModel;
 import com.fernandocejas.android10.sample.presentation.presenter.UserDetailsPresenter;
 import com.fernandocejas.android10.sample.presentation.view.UserDetailsView;
 import com.fernandocejas.android10.sample.presentation.view.component.AutoLoadImageView;
+import com.fernandocejas.arrow.checks.Preconditions;
 import javax.inject.Inject;
 
 /**
  * Fragment that shows details of a certain user.
  */
 public class UserDetailsFragment extends BaseFragment implements UserDetailsView {
-
-  private static final String ARGUMENT_KEY_USER_ID = "org.android10.ARGUMENT_USER_ID";
-
-  private int userId;
+  private static final String PARAM_USER_ID = "param_user_id";
 
   @Inject UserDetailsPresenter userDetailsPresenter;
 
@@ -43,30 +41,36 @@ public class UserDetailsFragment extends BaseFragment implements UserDetailsView
   @Bind(R.id.rl_retry) RelativeLayout rl_retry;
   @Bind(R.id.bt_retry) Button bt_retry;
 
-  public UserDetailsFragment() { super(); }
-
-  public static UserDetailsFragment newInstance(int userId) {
-    UserDetailsFragment userDetailsFragment = new UserDetailsFragment();
-
-    Bundle argumentsBundle = new Bundle();
-    argumentsBundle.putInt(ARGUMENT_KEY_USER_ID, userId);
-    userDetailsFragment.setArguments(argumentsBundle);
-
+  public static UserDetailsFragment forUser(int userId) {
+    final UserDetailsFragment userDetailsFragment = new UserDetailsFragment();
+    final Bundle arguments = new Bundle();
+    arguments.putInt(PARAM_USER_ID, userId);
+    userDetailsFragment.setArguments(arguments);
     return userDetailsFragment;
+  }
+
+  public UserDetailsFragment() {
+    setRetainInstance(true);
+  }
+
+  @Override public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    this.getComponent(UserComponent.class).inject(this);
   }
 
   @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-
-    View fragmentView = inflater.inflate(R.layout.fragment_user_details, container, false);
+    final View fragmentView = inflater.inflate(R.layout.fragment_user_details, container, false);
     ButterKnife.bind(this, fragmentView);
-
     return fragmentView;
   }
 
-  @Override public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    this.initialize();
+  @Override public void onViewCreated(View view, Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    this.userDetailsPresenter.setView(this);
+    if (savedInstanceState == null) {
+      this.loadUserDetails();
+    }
   }
 
   @Override public void onResume() {
@@ -87,13 +91,6 @@ public class UserDetailsFragment extends BaseFragment implements UserDetailsView
   @Override public void onDestroy() {
     super.onDestroy();
     this.userDetailsPresenter.destroy();
-  }
-
-  private void initialize() {
-    this.getComponent(UserComponent.class).inject(this);
-    this.userDetailsPresenter.setView(this);
-    this.userId = getArguments().getInt(ARGUMENT_KEY_USER_ID);
-    this.userDetailsPresenter.initialize(this.userId);
   }
 
   @Override public void renderUser(UserModel user) {
@@ -128,17 +125,26 @@ public class UserDetailsFragment extends BaseFragment implements UserDetailsView
     this.showToastMessage(message);
   }
 
-  @Override public Context getContext() {
+  @Override public Context context() {
     return getActivity().getApplicationContext();
   }
 
   /**
-   * Loads all users.
+   * Load user details.
    */
   private void loadUserDetails() {
     if (this.userDetailsPresenter != null) {
-      this.userDetailsPresenter.initialize(this.userId);
+      this.userDetailsPresenter.initialize(currentUserId());
     }
+  }
+
+  /**
+   * Get current user id from fragments arguments.
+   */
+  private int currentUserId() {
+    final Bundle arguments = getArguments();
+    Preconditions.checkNotNull(arguments, "Fragment arguments cannot be null");
+    return arguments.getInt(PARAM_USER_ID);
   }
 
   @OnClick(R.id.bt_retry)

@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2014 android10.org. All rights reserved.
+ *
  * @author Fernando Cejas (the android10 coder)
  */
 package com.fernandocejas.android10.sample.presentation.view.activity;
@@ -30,9 +31,12 @@ public class UserListActivity extends BaseActivity implements HasComponent<UserC
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-    setContentView(R.layout.activity_user_list);
+    setContentView(R.layout.activity_layout);
 
     this.initializeInjector();
+    if (savedInstanceState == null) {
+      addFragment(R.id.fragmentContainer, new UserListFragment());
+    }
   }
 
   private void initializeInjector() {

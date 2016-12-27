@@ -20,10 +20,10 @@ import com.fernandocejas.android10.sample.data.repository.datasource.UserDataSto
 import com.fernandocejas.android10.sample.data.repository.datasource.UserDataStoreFactory;
 import com.fernandocejas.android10.sample.domain.User;
 import com.fernandocejas.android10.sample.domain.repository.UserRepository;
+import io.reactivex.Observable;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import rx.Observable;
 
 /**
  * {@link UserRepository} for retrieving user data.
@@ -41,24 +41,20 @@ public class UserDataRepository implements UserRepository {
    * @param userEntityDataMapper {@link UserEntityDataMapper}.
    */
   @Inject
-  public UserDataRepository(UserDataStoreFactory dataStoreFactory,
+  UserDataRepository(UserDataStoreFactory dataStoreFactory,
       UserEntityDataMapper userEntityDataMapper) {
     this.userDataStoreFactory = dataStoreFactory;
     this.userEntityDataMapper = userEntityDataMapper;
   }
 
-  @SuppressWarnings("Convert2MethodRef")
   @Override public Observable<List<User>> users() {
     //we always get all users from the cloud
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userEntityList()
-        .map(userEntities -> this.userEntityDataMapper.transform(userEntities));
+    return userDataStore.userEntityList().map(this.userEntityDataMapper::transform);
   }
 
-  @SuppressWarnings("Convert2MethodRef")
   @Override public Observable<User> user(int userId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.create(userId);
-    return userDataStore.userEntityDetails(userId)
-        .map(userEntity -> this.userEntityDataMapper.transform(userEntity));
+    return userDataStore.userEntityDetails(userId).map(this.userEntityDataMapper::transform);
   }
 }
